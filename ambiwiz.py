@@ -9,16 +9,21 @@ from PIL import Image
 
 # device ip addresses (broadcast supported if enabled)
 DEVICES = [
-  {"ip": "192.168.178.255", "port": 38899}
+  {"ip": "192.168.0.255", "port": 38899}
 ]
 UDP_BROADCAST = True
 
 # color multiplier
 COLOR_MUL = 1
 
+DIM_MUL = 0.75
+
 # coolness/warmth
-C_VAL = 0
-W_VAL = 0
+COOLNESS = 0
+WARMTH = 0
+
+# state (on/off)
+STATE = True
 
 # used to check for changes to the values
 old_color = [
@@ -53,6 +58,8 @@ def process_image(img):
     max(min(avg_color[2] * COLOR_MUL, 255), 0),
   ) # r, g, b
 
+  set_dimming = round(((set_color[0] + set_color[1] + set_color[2]) / 3) * DIM_MUL)
+
   # apply color change if anything changed
   if set_color[0] != old_color[0] or set_color[1] != old_color[1] or set_color[2] != old_color[2]:
     print("colors changed!")
@@ -64,8 +71,10 @@ def process_image(img):
           "r": set_color[0],
           "g": set_color[1],
           "b": set_color[2],
-          "c": max(min(C_VAL, 255), 0),
-          "w": max(min(W_VAL, 255), 0)
+          "c": max(min(COOLNESS, 255), 0),
+          "w": max(min(WARMTH, 255), 0),
+          "dimming": max(min(set_dimming, 100), 0),
+          "state": STATE 
         },
         "method":"setPilot"
       }
